@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快餐人格测试 | Fast Food Personality Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fffef7 0%, #fff8e7 50%, #fff5d7 100%);
+            min-height: 100vh;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            transition: all 0.3s ease;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 193, 7, 0.4);
+        }
+        
+        .option-btn {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            background: #fff8f0;
+        }
+        
+        .option-btn:hover {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.08);
+        }
+        
+        .option-btn.selected {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.15);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .persona-card {
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dimension-bar {
+            height: 10px;
+            background: rgba(255, 193, 7, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .dimension-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s ease;
+            background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+        }
+        
+        .badge-mcdonalds {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #1a1a1a;
+        }
+        
+        .badge-kfc {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .badge-hidden {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 card mx-4 mt-4 max-w-4xl mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-semibold text-gray-900">快餐人格测试</h1>
+                    <p class="text-xs text-gray-500">Fast Food Personality Test</p>
+                </div>
+            </div>
+            <div class="text-sm text-gray-500" id="progress">0/24</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 max-w-2xl mx-auto">
+        <!-- Start Screen -->
+        <div id="start-screen" class="card p-8 text-center">
+            <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🍔 发现你的快餐人格</h2>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                回答24道趣味问题，找到与你最匹配的快餐人格类型！
+            </p>
+            <button id="start-btn" class="btn-primary px-10 py-4 rounded-xl font-semibold text-lg">
+                开始测试
+            </button>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="card p-8 hidden">
+            <div class="mb-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">维度: <span id="dimension-name">社交能量</span></span>
+                    <span class="text-gray-500 text-sm">第 <span id="question-number">1</span> 题</span>
+                </div>
+                <div class="h-2 bg-amber-100 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="progress-bar h-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <h3 id="question-text" class="text-xl font-semibold text-gray-900 mb-6"></h3>
+            
+            <div id="options-container" class="space-y-3">
+                <!-- Options will be inserted here -->
+            </div>
+            
+            <div class="flex justify-between mt-8">
+                <button id="prev-btn" class="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    上一题
+                </button>
+                <button id="next-btn" class="btn-primary px-8 py-3 rounded-xl font-semibold">
+                    下一题
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="card p-12 text-center hidden">
+            <div class="w-16 h-16 rounded-full border-4 border-amber-200 border-t-amber-500 animate-spin mx-auto mb-6"></div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">正在分析你的人格...</h3>
+            <p class="text-gray-500">美味即将揭晓...</p>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden space-y-6">
+            <!-- Persona Card -->
+            <div id="persona-card" class="persona-card card p-8 text-center">
+                <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-4xl">🍔</span>
+                </div>
+                <div class="flex justify-center gap-2 mb-2" id="badges-container"></div>
+                <h2 id="result-name" class="text-3xl font-bold text-gray-900 mb-2"></h2>
+                <p id="result-code" class="text-sm text-amber-600 mb-4"></p>
+                <p id="result-description" class="text-gray-600 max-w-md mx-auto leading-relaxed"></p>
+            </div>
+
+            <!-- Match Percentage -->
+            <div class="persona-card card p-6 text-center" style="animation-delay: 0.1s">
+                <div class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500 mb-2" id="match-percentage">0%</div>
+                <p class="text-gray-600">匹配度</p>
+                <p class="text-xs text-gray-400 mt-2">基于智能算法分析</p>
+            </div>
+
+            <!-- Dimension Scores -->
+            <div class="persona-card card p-6" style="animation-delay: 0.2s">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">🧮 维度分析</h3>
+                <div id="dimensions-container" class="space-y-4">
+                    <!-- Dimensions will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Match Rankings -->
+            <div class="persona-card card p-6" style="animation-delay: 0.3s">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">🥇 匹配度排行</h3>
+                <div id="matches-container" class="space-y-3">
+                    <!-- Matches will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Retake Button -->
+            <button id="retake-btn" class="btn-primary w-full py-4 rounded-xl font-semibold text-lg">
+                🔄 再测一次
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-400 text-sm pb-8">
+        <p>🍟 快餐人格测试 | 发现你的专属味道</p>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let result = null;
+
+        // 结局分类
+        const MCDONALDS = ['麦香鱼', '香辣鸡腿堡', '麦乐鸡', '板烧鸡腿堡', '双层吉士汉堡', '不素之霸双层牛堡', '香芋派', '巨无霸', '麦辣鸡翅', '那么大鸡排'];
+        const KFC = ['葡式蛋挞', '老北京鸡肉卷', 'K萨', '薄脆金沙鸡翅', '熔岩蛋包汁汁和牛堡', '热辣香骨鸡', '九珍果汁', '麦旋风', '打包袋', '糖醋酱', '吮指原味鸡', '肯德基爷爷的领带', '黄金SPA鸡排堡', '儿童套餐附赠的玩具'];
+        const HIDDEN = ['打包袋', '糖醋酱', '肯德基爷爷的领带', '儿童套餐附赠的玩具'];
+
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        
+        const progressText = document.getElementById('progress');
+        const progressFill = document.getElementById('progress-fill');
+        const questionNumber = document.getElementById('question-number');
+        const dimensionName = document.getElementById('dimension-name');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        
+        const badgesContainer = document.getElementById('badges-container');
+        const resultName = document.getElementById('result-name');
+        const resultCode = document.getElementById('result-code');
+        const resultDescription = document.getElementById('result-description');
+        const matchPercentage = document.getElementById('match-percentage');
+        const dimensionsContainer = document.getElementById('dimensions-container');
+        const matchesContainer = document.getElementById('matches-container');
+
+        async function init() {
+            await loadQuestions();
+            bindEvents();
+        }
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch(`${API_BASE}/questions`);
+                const data = await response.json();
+                questions = data.questions;
+            } catch (error) {
+                console.error('Failed to load questions:', error);
+                alert('加载题目失败，请确保后端服务已启动');
+            }
+        }
+
+        function bindEvents() {
+            startBtn.addEventListener('click', startTest);
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            retakeBtn.addEventListener('click', resetTest);
+        }
+
+        function startTest() {
+            startScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            currentIndex = index;
+            const question = questions[index];
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `${index + 1}/${questions.length}`;
+            
+            questionNumber.textContent = index + 1;
+            dimensionName.textContent = question.dimension_name;
+            questionText.textContent = question.text;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option) => {
+                const button = document.createElement('button');
+                button.className = `option-btn w-full text-left px-5 py-4 rounded-xl font-medium text-gray-700 transition-all ${answers[index] === option.key ? 'selected' : ''}`;
+                button.innerHTML = `<span class="font-semibold text-amber-600">${option.key}.</span> ${option.content}`;
+                button.addEventListener('click', () => selectOption(option.key));
+                optionsContainer.appendChild(button);
+            });
+            
+            prevBtn.disabled = index === 0;
+            nextBtn.textContent = index === questions.length - 1 ? '🍟 提交测试' : '下一题 →';
+        }
+
+        function selectOption(key) {
+            answers[currentIndex] = key;
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function goToPrev() {
+            if (currentIndex > 0) showQuestion(currentIndex - 1);
+        }
+
+        async function goToNext() {
+            if (!answers[currentIndex]) {
+                alert('请选择一个答案');
+                return;
+            }
+            
+            if (currentIndex < questions.length - 1) {
+                showQuestion(currentIndex + 1);
+            } else {
+                await submitTest();
+            }
+        }
+
+        async function submitTest() {
+            // 确保有24个答案
+            const finalAnswers = [];
+            for (let i = 0; i < 24; i++) {
+                finalAnswers[i] = answers[i] ? answers[i].toUpperCase() : "A";
+            }
+    
+            console.log('发送的答案:', finalAnswers);
+            console.log('答案数量:', finalAnswers.length);
+    
+            try {
+                const response = await fetch('http://localhost:8000/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers: finalAnswers })
+                });
+        
+                const resultData = await response.json();
+                console.log('服务器响应:', resultData);
+        
+                if (response.ok) {
+                    result = resultData;
+                    questionScreen.classList.add('hidden');
+                    loadingScreen.classList.remove('hidden');
+                    showResult();
+                } else {        
+                    alert('错误: ' + resultData.detail);
+                }
+            } catch (error) {        
+                alert('网络错误: ' + error.message);
+            }
+   }
+ 
+        function showResult() {
+            loadingScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const personaName = result.persona_name;
+            
+            // 显示徽章
+            badgesContainer.innerHTML = '';
+            
+            // 隐藏结局
+            if (HIDDEN.includes(personaName)) {
+                const badge = document.createElement('span');
+                badge.className = 'badge-hidden px-3 py-1 rounded-full text-xs font-medium';
+                badge.textContent = '✨ 隐藏结局';
+                badgesContainer.appendChild(badge);
+            }
+            
+            // 麦当劳/肯德基标记
+            if (MCDONALDS.includes(personaName)) {
+                const badge = document.createElement('span');
+                badge.className = 'badge-mcdonalds px-3 py-1 rounded-full text-xs font-medium';
+                badge.textContent = '🍟 麦当劳';
+                badgesContainer.appendChild(badge);
+            } else {
+                const badge = document.createElement('span');
+                badge.className = 'badge-kfc px-3 py-1 rounded-full text-xs font-medium';
+                badge.textContent = '🍗 肯德基';
+                badgesContainer.appendChild(badge);
+            }
+            
+            resultName.textContent = personaName;
+            resultCode.textContent = `人格代码: ${result.persona_code}`;
+            resultDescription.textContent = result.description;
+            
+            // 计算匹配度百分比（距离越小匹配度越高）
+            // 最大可能距离：24题 × (4-1.5) = 60
+            const maxDistance = 60;
+            const percentage = Math.max(0, Math.round((1 - result.distance / maxDistance) * 100));
+            matchPercentage.textContent = `${percentage}%`;
+            
+            // 维度分析
+            dimensionsContainer.innerHTML = '';
+            result.dimension_scores.forEach(dim => {
+                const dimDiv = document.createElement('div');
+                dimDiv.className = 'p-4 rounded-xl bg-amber-50';
+                
+                const percentage = ((dim.score - 1) / 3) * 100;
+                
+                dimDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-gray-800">${dim.name}</span>
+                        <span class="text-sm font-medium text-amber-600">${dim.tendency}</span>
+                    </div>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="text-right text-xs text-gray-500 mt-1">得分: ${dim.score.toFixed(2)}</div>
+                `;
+                dimensionsContainer.appendChild(dimDiv);
+            });
+            
+            // 匹配排行（显示前5）
+            matchesContainer.innerHTML = '';
+            let rank = 1;
+            for (const [name, distance] of Object.entries(result.all_matches)) {
+                if (rank > 5) break;
+                
+                const matchPercentage = Math.max(0, Math.round((1 - distance / maxDistance) * 100));
+                const isCurrent = name === personaName;
+                
+                const matchDiv = document.createElement('div');
+                matchDiv.className = `flex items-center justify-between p-4 rounded-xl ${isCurrent ? 'bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300' : 'bg-gray-50'}`;
+                
+                matchDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full ${isCurrent ? 'bg-amber-400 text-white' : 'bg-gray-200 text-gray-600'} flex items-center justify-center text-sm font-bold">${rank}</span>
+                        <span class="font-medium ${isCurrent ? 'text-amber-800' : 'text-gray-700'}">${name}</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold ${isCurrent ? 'text-amber-600' : 'text-gray-600'}">${matchPercentage}%</div>
+                        <div class="text-xs text-gray-400">距离: ${distance}</div>
+                    </div>
+                `;
+                matchesContainer.appendChild(matchDiv);
+                rank++;
+            }
+        }
+
+        function resetTest() {
+            currentIndex = 0;
+            answers = [];
+            result = null;
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressText.textContent = '0/24';
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
